@@ -1,7 +1,7 @@
 # AsyVault Privacy Policy
 
-**Effective date: October 12, 2026**  
-**Publisher: ASYGAMES**  
+**Effective date: October 12, 2026**
+**Publisher: ASYGAMES**
 **Product: AsyVault browser extension (Chrome / Chromium-based browsers)**
 
 AsyVault is a local-first encrypted vault for personal credentials, developer secrets, usernames, site/project URLs, and private notes. This policy explains what the extension stores, when it communicates with GitHub, and how you can manage that information.
