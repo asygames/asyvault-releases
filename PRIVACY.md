@@ -1,67 +1,59 @@
 # AsyVault Privacy Policy
 
-**Effective date: October 12, 2026**
-**Publisher: ASYGAMES**
-**Product: AsyVault browser extension (Chrome / Chromium-based browsers)**
+**Effective date: October 25, 2026**  
+**Publisher: ASYGAMES**  
+**Product: AsyVault for Chrome/Chromium and Firefox**
 
-AsyVault is a local-first encrypted vault for personal credentials, developer secrets, usernames, site/project URLs, and private notes. This policy explains what the extension stores, when it communicates with GitHub, and how you can manage that information.
+AsyVault is a local-first encrypted password and developer-secret manager. This policy describes the browser extension's current storage, website integration and network activity.
 
-## 1. Information you choose to store
+## 1. Vault data and local encryption
+You choose the records to store, including usernames, passwords, notes, cards, identities, API credentials, SSH keys, passkeys and Authenticator configuration. Personal and Developer vault contents are encrypted locally using AES-256-GCM, with keys derived from the master password using PBKDF2-SHA-256. Encrypted snapshots and history are stored in the extension's browser storage and IndexedDB.
 
-When you create a vault, you can save account names, usernames, passwords, API credentials, project identifiers, URLs, notes, and other text you explicitly enter. AsyVault encrypts the Personal and Developer vaults locally using AES-256-GCM. The keys are derived from your master password using PBKDF2-SHA-256.
+The master password is not uploaded to GitHub, backup providers or an ASYGAMES server. Derived unlock keys remain in protected browser-session memory while unlocked and are cleared by locking, expiry, browser restart or extension reload. Optional Authenticator convenience unlock stores a separately encrypted authorization capsule and a non-extractable wrapping key in the authorized browser profile. These device-specific unlock materials are excluded from portable backups and synchronization. This convenience feature is not hardware-backed protection against a compromised browser profile. The original master password is required to authorize a new browser and restore encrypted backups.
 
-Your master password is **not uploaded to GitHub or to an ASYGAMES server**. AsyVault cannot reset it or recover data encrypted with a lost master password. The extension temporarily retains *derived encryption key material* in memory-backed browser session storage while your vault is unlocked; this session material is cleared when the browser session ends or you manually lock the vault.
+## 2. Website assistance and passkeys
+AsyVault injects bundled scripts on eligible HTTPS websites after the browser grants the requested site access. The website assistant can inspect login and supported form fields, show matching-account suggestions, fill selected records and offer to save or update credentials. Saving captured credentials requires the extension's confirmation flow. Existing opt-outs and browser site-access restrictions are respected; the website form assistant can be disabled in Settings.
 
-Encrypted vault data remains in your browser's extension-local storage unless you choose to export a backup or enable GitHub synchronization.
+Passkey integration handles supported WebAuthn requests separately from the optional form assistant. After user approval, the requesting website receives the WebAuthn response needed for registration or authentication. Private signing keys remain in the encrypted vault and trusted extension contexts.
 
-## 2. Optional GitHub authorization and synchronization
+Current tab/frame URLs, frame ancestry and Permissions-Policy response headers are processed to check origin, navigation and iframe authorization. A short session diagnostic retains fixed stage/error categories and timestamps for up to five minutes; it does not retain challenge values, credential IDs, account names or private keys. AsyVault does not build a general browsing-history database.
 
-GitHub synchronization is optional. If you choose **Connect with GitHub**, AsyVault uses the official GitHub OAuth Device Flow and requests the `repo` permission. This permission is **broad**: a GitHub OAuth token with `repo` scope can technically access other private repositories available to your GitHub account. The current AsyVault client code deliberately restricts its own backup requests to your private `asyvault-data` repository, but this is **not a server-enforced restriction on the OAuth token**.
+## 3. GitHub and user-configured backups
+Current first-run setup for a newly created vault asks the user to connect GitHub to finish setup. Existing or imported vaults can be used locally without reconnecting, and automatic synchronization can be disabled. Connecting uses GitHub OAuth Device Flow with the broad repo scope: the token can technically access other private repositories available to your account. AsyVault's code restricts its own backup operations to your private asyvault-data repository; this restriction is not a GitHub-enforced token boundary.
 
-After authorization, the extension obtains your GitHub login name and an OAuth access token. The access token is stored **encrypted locally** inside the extension and sent to GitHub over HTTPS when you request backup/synchronization. The extension requests or creates a private repository named `asyvault-data` on your account and transmits **encrypted vault snapshots**, not plaintext vault entries. GitHub receives the encrypted file, repository paths, commit metadata, account/login and network request metadata. Previous encrypted snapshots may remain accessible in Git repository history, even after an entry is deleted from current snapshots.
+The GitHub login and OAuth token are stored encrypted locally. GitHub receives authenticated requests, encrypted vault snapshots, repository/commit metadata and routine network metadata, including the source IP address. Disconnecting removes the local authorization; revoking the token or deleting remote repository history is performed in GitHub settings.
 
-ASYGAMES does **not** operate a separate server receiving your vault contents or the OAuth access token. GitHub operates its own service and handles requests under its [Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+Optional secondary encrypted backups can be configured for local downloads, HTTPS/WebDAV, S3-compatible storage or Zipline. A selected remote provider receives encrypted backup files, required authentication and network metadata. Connection settings and credentials are encrypted locally. Remote destinations and retention are controlled by the user and the chosen provider.
 
-You can disconnect GitHub within AsyVault to delete the locally stored OAuth credential. Disconnecting does **not** revoke the token at GitHub, remove the remote backup, or delete its commit history. To revoke access, visit [GitHub Authorized OAuth Apps](https://github.com/settings/applications); to delete the encrypted backup, delete your `asyvault-data` repository through your GitHub account.
+On supported Firefox versions, GitHub and secondary-backup transfers also require the optional browser data-transmission consent declared by the extension. Declining transmission leaves new-vault setup unfinished; existing/imported local vault use remains available without enabling cloud backup.
 
-## 3. Exporting and importing your encrypted vault
+## 4. Website icons and updates
+When displaying saved login records, AsyVault may load public favicon.ico or apple-touch-icon.png images directly from their saved HTTPS origins. These requests omit cookies, authentication credentials and referrers and do not contain saved login paths or query strings. The contacted website can observe the request and source IP address. Chromium can also use its browser-native favicon cache; no external icon-aggregation service is used.
 
-AsyVault can export an encrypted `.asyvault` backup to a location you choose. The exported file contains both encrypted vaults and basic file metadata such as format and export time; it does **not** contain your master password, browser-session keys, or GitHub OAuth access token. You can import this file in another compatible browser, using the original master password to verify and decrypt the vault. Backups stored outside AsyVault remain under your control.
+Extension updates are managed by the browser's official store mechanism. Optional release-information checks contact GitHub. These checks do not upload vault contents or download executable extension code from GitHub.
 
-## 4. Network access and update checks
+## 5. Purpose, recipients and sharing
+Data is used to provide vault management, approved website/passkey actions and configured backups. ASYGAMES does not operate a server receiving vault contents, does not sell user data, and does not use it for advertising or data-broker purposes. The extension does not include analytics SDKs or advertising trackers. Websites receive the credentials or passkey responses that the user authorizes for them; chosen backup providers receive the data described above.
 
-AsyVault communicates with `github.com` for optional OAuth authorization and `api.github.com` for optional encrypted sync, repository verification, and on-demand release/update checks. These requests necessarily disclose IP addresses and routine request metadata to GitHub. Checking release information does not upload vault entries or secrets. Chrome Web Store updates are handled by the browser's ordinary extension update mechanism.
+GitHub handles its services under its Privacy Statement: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement. Other selected providers apply their own policies.
 
-AsyVault does **not** inject scripts into sites, read the contents of webpages you visit, or collect browsing history. It does not use analytics SDKs, advertising trackers, or telemetry endpoints in the current release.
+## 6. Retention, deletion and recovery
+Encrypted records, history and device authorization remain in the local browser profile until removed. Deletion markers prevent stale synchronized copies from restoring deleted active entries, but older snapshots, exports and Git repository history can retain previous encrypted versions. Removing local extension data does not delete external backups.
 
-## 5. Use and sharing of data
+Encrypted exports contain vault contents and format metadata, not the master password, browser-session unlock keys or OAuth tokens. ASYGAMES cannot reset the master password or recover a vault encrypted with a lost password. No independent security audit is claimed for this release.
 
-AsyVault uses the information you enter solely to provide encrypted vault storage, optional encrypted backups/sync, and the other user-requested features described above.
+## 7. Browser permissions
+- storage: encrypted vaults, settings and protected session state.
+- alarms: background scheduling, retry and session expiry.
+- scripting and HTTPS site access: website assistance and WebAuthn integration.
+- contextMenus: user-invoked vault shortcuts.
+- clipboardWrite: user-selected copy actions.
+- webNavigation: browser-verified frame ancestry and navigation state for secure passkey routing.
+- webRequest: observation of page/frame response policy headers for WebAuthn authorization; this feature does not modify traffic or read request bodies.
+- favicon, on Chromium: browser-native cached site icons.
+- downloads, optional: user-enabled local encrypted backup downloads.
 
-ASYGAMES does **not** sell vault data, use it for advertising, share it with data brokers, or disclose user secrets to third parties. When you explicitly enable GitHub synchronization, encrypted snapshots and required request metadata are sent **to GitHub as a service provider you choose**. ASYGAMES staff do not have a system to view or decrypt your vault.
+The manifest declares broad HTTPS site access. Firefox also declares optional authentication, personal, financial/payment, browsing-activity and website-content data categories for encrypted backup transfers.
 
-## 6. Retention, deletion and security
-
-Local encrypted records remain in extension storage until you delete them or remove the extension's local data. A record deleted through AsyVault is excluded from active lists and marked as deleted for sync, but older encrypted snapshots or exported backups can still contain earlier versions. Google Chrome or other browsers may retain or delete extension storage according to their own policies when extensions are removed.
-
-Remote GitHub backups remain on your GitHub account until you remove them. GitHub commit history may retain previous encrypted versions. We do not independently control GitHub's retention of repository data or service metadata.
-
-The current implementation uses browser WebCrypto APIs, AES-GCM encryption, and HTTPS communication. **AsyVault is experimental software without an independent security audit**. Do not rely on it as the sole storage location for critical recovery information or production secrets.
-
-## 7. Permissions
-
-- **`storage`**: saves encrypted local vaults, protected OAuth tokens, and ephemeral session key material required to unlock during a browser session.
-- **`https://github.com/*`**: used for the GitHub OAuth Device Flow during optional account connection.
-- **`https://api.github.com/*`**: used for optional encrypted backup/sync and for checking public release information when requested.
-
-AsyVault does not request blanket webpage reading or browsing-history permissions.
-
-## 8. Changes to this policy
-
-We will update this page when the extension's data practices or features materially change. The effective date above will be revised, and the updated policy will be available at the same public URL.
-
-## 9. Contact
-
-For privacy-related questions or deletion instructions, contact the project maintainer through the public [AsyVault Releases support issues](https://github.com/asygames/asyvault-releases/issues/new).
-
-**Do not publish passwords, access tokens, recovery codes, or personal secrets in a public support issue.**
+## 8. Changes and contact
+This policy is updated when functionality or data practices change. Contact the maintainer through https://github.com/asygames/asyvault-releases/issues/new. Do not put passwords, access tokens, recovery codes, private keys or personal vault exports in a public support issue.
